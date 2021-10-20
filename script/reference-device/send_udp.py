@@ -38,12 +38,20 @@ def main():
     dst = sys.argv[2]
     port = sys.argv[3]
     payload = sys.argv[4]
+    src = "::"
+
+    if len(sys.argv) == 6:
+        src = sys.argv[5]
 
     log = '====otbr-agent=send_udp===  send_udp.py started'
     syslog.syslog(syslog.LOG_ERR, log)
     print(log)
 
     log = 'dst %s' % dst
+    syslog.syslog(syslog.LOG_ERR, log)
+    print(log)
+
+    log = 'src %s' % src
     syslog.syslog(syslog.LOG_ERR, log)
     print(log)
 
@@ -65,6 +73,8 @@ def main():
         sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         # Configure SO_BINDTODEVICE to bind the network interface.
         sock.setsockopt(socket.SOL_SOCKET, 25, interface.encode('utf-8'))
+        sock.bind((src, 0))
+
         sock.sendto(byte_payload, (dst, int(port)))
     except Exception as e:
         log = '====otbr-agent=send_udp=== sendto %s' % str(e)
